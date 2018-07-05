@@ -7,31 +7,35 @@ class App extends Component {
     display: '0'
   };
 
-  clear = () => {
-    this.setState({
-      display: '0'
-    });
-  };
+  handleButton = btn => {
+    if (btn === 'C') {
+      this.clear();
+      return;
+    }
 
-  number = num => {
+    if (btn === '=') {
+      this.equals();
+      return;
+    }
+
     if (this.state.display === '0') {
-      if (num === '.') {
+      if (btn === '.') {
         this.setState({ display: '0.' });
       } else {
-        this.setState({ display: num });
+        this.setState({ display: btn });
       }
       return;
     }
 
     // new op erases previous
     if (/[+\-*/]+/.test(this.state.display.slice(-1))) {
-      if (/[+\-*/]+/.test(num)) {
-        this.setState({ display: `${this.state.display.slice(0, -1)}${num}` });
+      if (/[+\-*/]+/.test(btn)) {
+        this.setState({ display: `${this.state.display.slice(0, -1)}${btn}` });
         return;
       }
     }
 
-    if (num === '.') {
+    if (btn === '.') {
       // no dot already
       if (
         this.state.display
@@ -39,13 +43,19 @@ class App extends Component {
           .pop()
           .split('.').length < 2
       ) {
-        this.setState({ display: `${this.state.display}${num}` });
+        this.setState({ display: `${this.state.display}${btn}` });
       }
       return;
     }
 
     // survived all that, must be a number
-    this.setState({ display: `${this.state.display}${num}` });
+    this.setState({ display: `${this.state.display}${btn}` });
+  };
+
+  clear = () => {
+    this.setState({
+      display: '0'
+    });
   };
 
   equals = () => {
@@ -53,42 +63,38 @@ class App extends Component {
   };
 
   render() {
-    const numberButtons = [
-      { id: 'zero', display: '0' },
-      { id: 'one', display: '1' },
-      { id: 'two', display: '2' },
-      { id: 'three', display: '3' },
-      { id: 'four', display: '4' },
-      { id: 'five', display: '5' },
-      { id: 'six', display: '6' },
+    const buttons = [
+      { id: 'clear', display: 'C' },
+      { id: 'divide', display: '/' },
+      { id: 'multiply', display: '*' },
+      { id: 'subtract', display: '-' },
       { id: 'seven', display: '7' },
       { id: 'eight', display: '8' },
       { id: 'nine', display: '9' },
       { id: 'add', display: '+' },
-      { id: 'subtract', display: '-' },
-      { id: 'multiply', display: '*' },
-      { id: 'divide', display: '/' },
+      { id: 'four', display: '4' },
+      { id: 'five', display: '5' },
+      { id: 'six', display: '6' },
+      { id: 'one', display: '1' },
+      { id: 'two', display: '2' },
+      { id: 'three', display: '3' },
+      { id: 'equals', display: '=' },
+      { id: 'zero', display: '0' },
       { id: 'decimal', display: '.' }
     ];
     return (
       <div className="App">
-        <div>
+        <div id="calculator">
           <div id="display">{this.state.display}</div>
-          <button id="equals" onClick={this.equals}>
-            =
-          </button>
-          {numberButtons.map(button => (
+          {buttons.map(btn => (
             <button
-              key={button.id}
-              id={button.id}
-              onClick={this.number.bind(this, button.display)}
+              key={btn.id}
+              id={btn.id}
+              onClick={this.handleButton.bind(this, btn.display)}
             >
-              {button.display}
+              {btn.display}
             </button>
           ))}
-          <button id="clear" onClick={this.clear}>
-            =
-          </button>
         </div>
       </div>
     );
