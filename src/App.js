@@ -13,23 +13,32 @@ class App extends Component {
       return;
     }
 
+    const isThisOp = /[+\-*/]+/.test(btn);
+    const isLastOp = /[+\-*/]+/.test(this.state.display.slice(-1));
+
     if (btn === '=') {
-      this.equals();
+      if (isLastOp) {
+        this.setState({ display: this.state.display.slice(0, -1) }, () => {
+          this.equals();
+        });
+      } else {
+        this.equals();
+      }
       return;
     }
 
     if (this.state.display === '0') {
       if (btn === '.') {
         this.setState({ display: '0.' });
-      } else {
+      } else if (!isThisOp) {
         this.setState({ display: btn });
       }
       return;
     }
 
     // new op erases previous
-    if (/[+\-*/]+/.test(this.state.display.slice(-1))) {
-      if (/[+\-*/]+/.test(btn)) {
+    if (isLastOp) {
+      if (isThisOp) {
         this.setState({ display: `${this.state.display.slice(0, -1)}${btn}` });
         return;
       }
