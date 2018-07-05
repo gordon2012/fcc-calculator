@@ -1,10 +1,13 @@
 import React, { Component } from 'react';
+import * as math from 'mathjs';
+window.math = math;
 
 class App extends Component {
   state = {
-    // display: '3+5*6-2/4'
-    // display: '2+3*4' // should be 14, not 20
-    display: '2+3*4-5' // should be 9, not 15
+    // display: '3+5*6-2/4' // 32.5, not 11.5
+    // display: '2+3*4' // 14, not 20
+    // display: '2+3*4-5' // 9, not 15
+    display: '1+2-3.14'
   };
 
   clear = () => {
@@ -15,15 +18,91 @@ class App extends Component {
 
   number = num => {
     // console.log(num);
+    // var display = this.state.display;
+    // const lastIsOp = /[+\-*/]+/.test(this.state.display.slice(-1));
+    // var last = display.slice(-1);
 
+    // just been cleared or initial
+    // TODO: disallow operators?
     if (this.state.display == '0') {
-      this.setState({ display: num });
-    } else {
-      this.setState({ display: `${this.state.display}${num}` });
+      if (num == '.') {
+        this.setState({ display: '0.' });
+      } else {
+        this.setState({ display: num });
+      }
+      return;
     }
+    console.log(this.state.display);
+    const lastIsOp = /[+\-*/]+/.test(this.state.display.slice(-1));
+    if (lastIsOp) {
+      // if incoming is op, erase previous
+      if (/[+\-*/]+/.test(num)) {
+        this.setState({ display: `${this.state.display.slice(0, -1)}${num}` });
+        return;
+      } /*else {*/
+      // this.setState({ display: `${this.state.display}${num}` });
+
+      // TODO: check for dot?
+    }
+
+    if (num == '.') {
+      // no dot already
+      var prevNum = this.state.display.split(/[+\-*/]+/).pop();
+      // console.log(prevNum.split('.').length);
+      if (
+        this.state.display
+          .split(/[+\-*/]+/)
+          .pop()
+          .split('.').length < 2
+      ) {
+        this.setState({ display: `${this.state.display}${num}` });
+        // return;
+      }
+      return;
+    }
+
+    // survived, must be a number
+    this.setState({ display: `${this.state.display}${num}` });
+
+    // if (this.state.display == '0' || lastIsOp) {
+    //   if (num == '.') {
+    //     this.setState({ display: `${this.state.display}.` });
+    //   } else {
+    //     this.setState({ display: num });
+    //   }
+    // } else {
+    //   if (num == '.') {
+    //     console.log(this.state.display);
+    //     //'1+2-3/4*5'.split(/[+-/*]+/)
+    //     //'1+2-3/4*5333.1'.split(/[+\-*/]+/).pop().split('.').length
+    //     if (
+    //       this.state.display
+    //         .split(/[+\-*/]+/)
+    //         .pop()
+    //         .split('.').length < 1
+    //     ) {
+    //       // if (this.state.display.slice(-1) != '.') {
+    //       this.setState({ display: `${this.state.display}${num}` });
+    //     }
+    //   } else {
+    //     this.setState({ display: `${this.state.display}${num}` });
+    //   }
+    // }
   };
 
   equals = () => {
+    // this.setState({ display: math.eval(this.state.display) }, () => {
+    //   window.state = this.state;
+    // });
+
+    this.setState({ display: String(math.eval(this.state.display)) }, () => {
+      window.state = this.state;
+    });
+
+    // this.setState({ display: String(math.eval(this.state.display)) });
+    // this.state.display.split('+').map(x => ).reduce(add, 0);
+    return;
+    console.log(math.eval(this.state.display));
     console.log(this.state.display);
 
     const add = (a, c) => {
